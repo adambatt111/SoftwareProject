@@ -1,0 +1,31 @@
+//with the star(*), eclipse will import ALL extensions to be used.
+import java.util.*;
+
+//access modifier: public
+//A class is a blueprint for creating objects
+
+//a) THIS IS OUR CLASS: Program1
+public class Program1 extends Thread{
+	//this object, Random, has been created.
+	//Random is part of the java.util.* extension.
+	//the variable rnd does not have to be called rnd (it can be anything.)
+	Random rnd = new Random();
+	
+	//this is public, so it is accessible to everything else.
+	//void means this is a "return type" it returns void.
+	
+	//b) THIS IS THE METHOD. IT EXISTS INSIDE THE CLASS
+	public void run()
+	{
+		//for every int less than 30, increment  by 1.
+		for(int i = 0; i < 30; i++)
+		{
+			//draws a clear line between program 1 and 2.
+			//nextInt is a part of the java.util.* extension.
+			System.out.println("I am Program 1: " + rnd.nextInt(100));
+			//Just something fun I thought I would try
+			//500 = 0.5 seconds. So, 1000 = 1 second. 
+			try { Thread.sleep(1000); } catch(Exception e) {};
+		}
+	}
+}
