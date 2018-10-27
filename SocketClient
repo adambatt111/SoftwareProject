@@ -1,13 +1,11 @@
 package com.soc;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.Socket;
 
 public class SocClient {
-	//We throw the exception as this port number (9999) may be booked
+	//We throw the exception as this port number (9999) may be booked (just in case).
 	public static void main(String[] args) throws Exception
 	{
 		//It is possible to just type the IP in here
@@ -23,17 +21,11 @@ public class SocClient {
 		 */
 		String str = "Jason Peilow";
 		
-		
+		//It is important to note that the client WRITES (OutputStreamWriter) to the server.
 		OutputStreamWriter os = new OutputStreamWriter(s.getOutputStream());
 		PrintWriter out = new PrintWriter(os);
-		out.println(str);
-		os.flush();
-		//os.close();
-		
-		BufferedReader br = new BufferedReader(new InputStreamReader(s.getInputStream()));
-		String nickName = br.readLine();
-		
-		System.out.println("C : Data from Server " + nickName);
+		os.write(str);
+		os.close();
 	}
 
 }
