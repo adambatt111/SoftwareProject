@@ -2,35 +2,38 @@ package com.soc;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 
 public class SocServer {
 
+	//As before, throws an exception in case the port : 9999 is not free
 	public static void main(String[] args) throws Exception
 	{
-	System.out.println("S : Server is started");
+	//A text output so the user knows the server is active.
+	System.out.println("Server is started");
+	//The newly generated socket for the client to access.
 	ServerSocket ss = new ServerSocket(9999);
 	
-	System.out.println("S : Server is waiting for client request");
+	//A text output to inform the client the server is waiting for their input.
+	System.out.println("Server is waiting for client request");
+	//The ServerSocket (ss) accepts the client Socker (s)
 	Socket s = ss.accept();
 	
-	System.out.println("S : Client Connected");
+	//Text output to confirm the client has successfully connected to the server.
+	System.out.println("Client Connected");
 	
-	//Watch more tutorials to understand buffered reader.
+	/*
+	 * Watch more tutorials to understand buffered reader. (In more complex detail)
+	 *Generally, as stated in the client program (which writes)...
+	 *This is so the server can read (BufferedReader)...
+	 *the given input (InputStreamReader) from the client.
+	 */
 	BufferedReader br = new BufferedReader(new InputStreamReader(s.getInputStream()));
+	//Reads the string "Jason Peilow" from client.
 	String str = br.readLine();
 	
-	System.out.println("S : Client Data : " + str);
-	
-	String nickName = str.substring(0, 3);
-	
-	OutputStreamWriter os = new OutputStreamWriter(s.getOutputStream());
-	PrintWriter out = new PrintWriter(os);
-	out.println(nickName);
-	out.flush();
-	System.out.println("S : Data sent from Server to Client");
+	//Prints the client data : Jason Peilow
+	System.out.println("Client Data : " + str);
 	}	
 }
