@@ -1,0 +1,261 @@
+package EntireScript;
+ import java.io.BufferedReader;
+ import java.io.*;
+import java.io.IOException;
+//Input stream loaded 
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+//imported for URL functionality
+import java.net.URL;
+import java.util.Arrays;
+import java.util.Scanner;
+import java.lang.String ;
+ public class Complete{
+ 	//This is the URL we are going to be using with out own API key
+	public static final String SEARCH_Omdb = 
+			//392b4f7b THIS IS OUR API KEY
+			//TITLE and APIKEY are passed, below (LINES), as arguments
+			"http://www.omdbapi.com/?CODE=FILMQUERY&apikey=OMDBKEY";
+	
+	public static final String SEARCH_Tmdb = 
+			//392b4f7b THIS IS OUR API KEY
+			//TITLE and APIKEY are passed, below (LINES), as arguments
+			"https://api.themoviedb.org/3/FILMQUERY2/550?api_key=20724b45c58f00fd577ff46284718a797";
+	
+	public static String clientRequest(String requestUrl) {
+		//Concatenates all of the JSON code from the Omdb server
+		//The JSON "Raw data" is just a string
+		StringBuffer concatenate = new StringBuffer();
+		
+		//requestURL throws and exception, so we surround it with a try catch
+		try {
+		URL url = new URL(requestUrl);
+		
+		//Then open up a connection to that URL
+		//url.openConnection also throws an exception ((2) added a catch clause)
+		HttpURLConnection OmdbServer = 
+				(HttpURLConnection) url.openConnection();
+		
+		//In this instance the connection is configured to be a GET
+		OmdbServer.setRequestMethod("GET");
+		OmdbServer.setRequestProperty("Accept",  "*/*");
+		OmdbServer.setRequestProperty("Content-Type", "application/jason; charset=UTF-8");
+		
+		//This input will be read byte by byte and concatenated to our local data as a final string
+		InputStream stream = OmdbServer.getInputStream();
+		InputStreamReader reader = new InputStreamReader(stream);
+		BufferedReader buffer = new BufferedReader(reader);
+		
+		//Now the buffer is all set up, we can start reading from it
+		//This is where we concatenate it into a local string
+		String line;
+		while ((line = buffer.readLine()) != null) {
+			concatenate.append(line);
+		}
+		buffer.close();
+		OmdbServer.disconnect();
+		
+		} catch (MalformedURLException e) {
+			//TODO auto-generated catch block
+			e.printStackTrace();
+		//This is the catch clause surrounding (2)
+		} catch (IOException e) {
+			//TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return concatenate.toString();
+	}
+	
+	//A: SEARCH FUNCTION (First Function) 
+	//This fulfils a user story "As a user, I want to search etc..."
+	public static String movieTitleSearch (String MyChoice, String SelectedFilm, String MyKey) {
+		String requestUrl = SEARCH_Omdb
+				.replaceAll("FILMQUERY", SelectedFilm)
+				.replaceAll("OMDBKEY", MyKey)
+				.replaceAll("CODE", MyChoice);
+		
+		return clientRequest(requestUrl);
+	}
+	//STACK DATA STRUCTURE
+	
+	//B: WISHLIST FUNCTION
+	public static void readWishlist() {
+		String[] film;	//Creates array to store all films in wishlist.
+	    	
+		String wishlistFile = "wishlist.txt";	//File location
+		film = read(wishlistFile);	//Calls read function sending the wishlist location. Returns wishlist items as an array.
+		
+		for (int x = 0; x < film.length - 1;x++)	//For loop outputs all items in array.
+		{
+			System.out.println(film[x]);
+		}
+ 	}
+	    
+	public static String[] read(String location)
+	{
+		String[] output = {"x"};
+		String line = null;
+		try {
+		int x = 0;	
+		FileReader fileReader = new FileReader(location); //File Reader to read file
+		
+		BufferedReader bufferedReader = new BufferedReader(fileReader);	//Bufferreader to read one line at a time.
+		
+		while((location = bufferedReader.readLine()) != null)	//While loop to go through each line of text file/
+		{
+			output[x] = line;	//Fills each line in text file into output array
+			x++;	
+		}
+		
+		bufferedReader.close();	//Closes buffer
+		}
+		catch(FileNotFoundException ex) {	//Exceptions for not finding file
+			System.out.println("Unable to find file: " + location);
+		}
+		catch(IOException ex)
+		{	//Exception for not being able to read file.
+			System.out.println("Error reading file " + location);
+		}
+		
+	 return output;	//Returns output array
+		
+	}
+	
+	public static void getAddition()
+	{
+		Scanner sc = new Scanner(System.in);	//Creates Scanner to get user unput.
+		String fileLocation = "wishlist.txt";	//File location
+		System.out.println("What film would you like to add to your wishlist?");	//gets users film addition.
+		String addition = sc.nextLine();	//Reads the user input
+		addition = addition + "\n"; // Adds the new item to text file and drops down the next line.
+		write(addition, fileLocation); //Calls the write file sending the new addition and the file location.
+		
+		sc.close(); 	//Closes to the scanner.
+	}
+	    
+	public static void write(String addition, String location)
+	{
+		try {
+			FileWriter fileWriter = new FileWriter(location, true); //Creates a file writer, adds the location to it. 'True' denotes the text file being ammended.
+			BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);	//Creates an instance of BufferedWriter using fileWriter as a paramter.
+			
+			bufferedWriter.write(addition);	//Writes the addition variable to the text file.
+			bufferedWriter.close();	//Closes the buffer/
+		}
+		catch (IOException ex)
+		{	//Excpetions for not being able to write to text file.
+			System.out.println("Error writing file " + location);
+		}
+	}
+	/*
+	//C: COMMENT FUNCTION
+	public static void accessComments()
+	{
+		String[] allComments;	//creates an array to store all lines in comment text file,
+		String commentFile = "Comment.txt";	//File location
+		
+		allComments = read(commentFile);	//Calls function to read the text file. The results are returned to the comment array.
+		
+		String film = "film";	//Which variable is being searched. 
+		Arrays.sort(allComments);	//Sorts the array into alphabetical order
+		String[][] filmComments;	//2D array to split the comments and name
+		for (int x = 0; x > allComments.length; x++)	//For loop to split the comments and the name 
+		{		
+			String string = allComments[x];
+			String[] splits = string.split("\n");
+						
+			filmComments[0][x] = splits[0];
+			filmComments[1][x] = splits[1];
+			filmComments[2][x] = Integer.toString(x);
+		}
+		
+
+	int pos = Arrays.binarySearch(filmComments[0], film); //binary search to search for the desired films comments.
+	
+	while (filmComments[0][pos] == filmComments[0][pos-1])	//Incase the binary search doesnt find the first instance of a comment, eg the second batman comment, it will iterate backwards to find the first comment.
+	{
+		pos--;
+	}
+	
+	pos--; //reduces position by one.
+	do	//do loop to output the comment and film title and iterate the position variable each time to get to the next comment.
+	{
+		pos++;
+		System.out.println(filmComments[0][pos] + "\n");
+		System.out.println(filmComments[1][pos]);
+	} while (filmComments[0][pos] == filmComments[0][pos+1]);	//Stops loop when the next film title isnt the same as the last.
+	
+
+	}
+ 	*/
+	public static void addComment()
+	{
+		String location = "comments.txt";	//file locaiton
+		Scanner sc = new Scanner(System.in);	//creates scanner
+		System.out.println("What film are you commenting on?");	//Which film the user wants to comment on
+		String filmComment = sc.nextLine();	//reads the user input
+		System.out.print("\nComment: ");	//Asks the user for their commebnt
+		String comment = sc.nextLine();	//reads the user input
+		
+		String newComment = (filmComment + "\n" + comment + "\n");	//Formats the comment to put it all into one string, so becomes one line in the text file.
+		write(newComment, location);	//Calls the write function to add the new comment.
+		sc.close();	//Closes scanner/.
+	}
+	
+	
+	
+	
+	
+	public static void main(String[] args) {
+		//TODO Auto-generated method stub
+		String a;
+		readWishlist();	//Calls functions to test
+		getAddition();
+		readWishlist();
+		System.out.println("test");
+		Scanner sc = new Scanner(System.in);
+		
+		//User input
+		System.out.println("----------Choose a film----------");
+		a = sc.nextLine();
+		String newName = a.replaceAll(" ", "+");
+		System.out.println("Name:\n" + newName + "\n");
+		
+		//1. Search by film title (t)
+		System.out.println("----------Film details----------\n");
+		//Combines user input with URL
+		String outputTitle = Complete.movieTitleSearch("t", newName,  "392b4f7b"); //392b4f7b THIS IS OUR API KEY
+		
+		//Puts the string into an array
+		String result1 = outputTitle;
+		String[] resultarray1 = result1.substring(1,result1.length()).split(",");
+		for (String string : resultarray1) {
+			System.out.println(string);	
+		}
+		
+		//2. All other searches associated with film title
+		System.out.println("\n----------Other potential film searches:----------\n");
+		
+		//Combines user input with URL
+		String outputSearches = Complete.movieTitleSearch("s", newName,  "392b4f7b"); //392b4f7b THIS IS OUR API KEY
+		
+		//Puts the string into an array
+		String result2 = outputSearches;
+		String[] resultarray2 = result2.substring(1,result2.length()).split(",");
+		for (String string : resultarray2) {
+			System.out.println(string);
+		}
+		/*
+		System.out.println("\n----------Enter IMDB ID:----------\n");
+		String outputIMDBID = OmdbClientServerConnectivity.movieTitleSearch("s", newName,  "392b4f7b"); //392b4f7b THIS IS OUR API KEY]
+		
+		
+		System.out.println("\n----------Search Tmdb?: Y or N ----------\n");
+		String outputTMDB = OmdbClientServerConnectivity.movieTitleSearch(newName);
+		*/
+		sc.close();
+		
+	}
+}
